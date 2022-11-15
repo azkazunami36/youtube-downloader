@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test</title>
+    <script>
+        addEventListener("load", () => {
+            document.getElementById("button").addEventListener("click", () => {
+                const xhr = new XMLHttpRequest();
+
+                xhr.open("POST", "http://127.0.0.1/download");
+                xhr.setRequestHeader("content-type", "text/plain;charset=UTF-8");
+                const url = document.getElementById("text").value;
+                console.log(url);
+                xhr.send("url=" + url);
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState === 4 && xhr.status === 200) { //通信が完了し、成功をマークしていたら
+                        console.log(xhr.responseText);
+                    };
+                };
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <input id="text" type="text" placeholder="URLを入力">
+    <input id="button" type="button" value="Download">
+
+    <form action="/download" method="post">
+        <input class="URL-input" type="textarea" placeholder="URL" name="url" value="">
+        <input type="submit" value="Download">
+    </form>
+</body>
+
+</html>
