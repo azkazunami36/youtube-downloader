@@ -3,18 +3,22 @@
 
 <head>
     <title>Test</title>
-    <script src="javascript"></script>
-    <link rel="stylesheet" href="stylesheet">
+    <script src="javascript.js"></script>
+    <style></style>
 </head>
 
 <body>
-    <input id="text" type="text" placeholder="URLを入力">
-    <input id="button" type="button" value="Download">
-
-    <form action="/download" method="post">
-        <input class="URL-input" type="textarea" placeholder="URL" name="url" value="">
-        <input type="submit" value="Download">
-    </form>
+    <div id="header">
+        <input id="text" type="text" placeholder="URLを入力">
+        <div id="button">送信</div>
+    </div>
+    <div>
+    
+        <form action="/download" method="post">
+            <input class="URL-input" type="textarea" placeholder="URL" name="url" value="">
+            <input type="submit" value="Download">
+        </form>
+    </div>
 </body>
 
 </html>

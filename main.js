@@ -3,7 +3,28 @@ const port = parseInt(process.env.PORT || "81", 10);
 const readline = require("readline");
 const fs = require("fs");
 const ffmpeg = require("fluent-ffmpeg");
-const { mb, time } = require("./function");
+/**
+ * Numberで構成された秒数を文字列「x時間x分x秒」に変換します。
+ * @param {Number} sec 秒数を入力します。
+ * @returns 文字列を返します。
+ */
+ const time = (sec) => {
+    let output = "";
+    let minute = 0;
+    let hour = 0;
+    for (minute; sec > 59; minute++) sec -= 60;
+    for (hour; minute > 59; hour++) minute -= 60;
+    if (hour != 0) output += hour + "時間";
+    if (minute != 0) output += minute + "分";
+    output += (sec).toFixed() + "秒";
+    return output;
+};
+/**
+ * 数値をByteからMBに変換します。
+ * @param {Number} byte Byteを入力します。
+ * @returns {Number} MBを返します。
+ */
+const mb = (byte) => { return (byte / 1024 / 1024).toFixed(1); };
 const cors = require("cors");
 app.listen(port, async () => {
     let address = "http://localhost";
@@ -20,13 +41,18 @@ app.get("/*", async (req, res) => {
             res.end(fs.readFileSync("index.html"));
             break;
         }
-        case "/javascript": {
+        case "/javascript.js": {
             res.header("Content-Type", "text/html;charset=utf-8");
             res.end(fs.readFileSync("index.js"));
             break;
         }
+        case "/stylesheet.css": {
+            res.header("Content-Type", "text/plain;charset=utf-8");
+            res.end(fs.readFileSync("stylesheet.css"));
+            break;
+        }
         case "/stylesheet": {
-            res.header("Content-Type", "text/html;charset=utf-8");
+            res.header("Content-Type", "text/plain;charset=utf-8");
             res.end(fs.readFileSync("stylesheet.css"));
             break;
         }
@@ -46,9 +72,9 @@ app.post("/*", async (req, res) => {
             req.on("response", res => {
                 let data = "";
                 res.on("data", chunk => { data += chunk; });
-                res.on("end", () => { json = JSON.stringify(JSON.parse(data).youtube_data); });
+                res.on("end", () => { json = JSON.stringify(JSON.parse(data)); });
             });
-            req.write(JSON.stringify([""]));
+            req.write(JSON.stringify(["youtube_data"]));
             req.on("error", err => console.log());
             req.end();
             res.header("Content-Type", "text/plain;charset=utf-8");

@@ -1,4 +1,4 @@
-addEventListener("load", () => {
+addEventListener("load", async () => {
     document.getElementById("button").addEventListener("click", () => { });
 
     const xhr = new XMLHttpRequest();
@@ -12,4 +12,5 @@ addEventListener("load", () => {
             console.log(xhr.responseText);
         };
     };
+    (await fetch("stylesheet")).text().then(data => document.getElementsByTagName("style")[0].innerHTML = data);
 });
