@@ -30,20 +30,6 @@ app.listen(port, async () => {
     let address = "http://localhost";
     if (port != "80") address += ":" + port;
     console.info("ポート" + port + "でWebを公開しました！ " + address + " にアクセスしてダウンロードしましょう！");
-    fs.readdir("./cache/", { withFileTypes: true }, (err, dirents) => {
-        if (err) throw err;
-        const filenamelist = [];
-        for (let i = 0; i != dirents.length; i++) {
-            if (!dirents[i].isDirectory()) {
-                const name = dirents[i].name;
-                const namedot = name.split(".");
-                const extension = namedot[namedot.length - 1];
-                filenamelist.push(name.slice(0, -(extension.length + 1)));
-                console.log(name.slice(0, -(extension.length + 1)))
-            };
-        };
-        console.log(filenamelist)
-    });
 });
 app.use(cors());
 
