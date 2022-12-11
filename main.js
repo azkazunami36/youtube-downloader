@@ -8,7 +8,7 @@ const ffmpeg = require("fluent-ffmpeg");
  * @param {Number} sec 秒数を入力します。
  * @returns 文字列を返します。
  */
- const time = (sec) => {
+const time = (sec) => {
     let output = "";
     let minute = 0;
     let hour = 0;
@@ -30,6 +30,20 @@ app.listen(port, async () => {
     let address = "http://localhost";
     if (port != "80") address += ":" + port;
     console.info("ポート" + port + "でWebを公開しました！ " + address + " にアクセスしてダウンロードしましょう！");
+    fs.readdir("./cache/", { withFileTypes: true }, (err, dirents) => {
+        if (err) throw err;
+        const filenamelist = [];
+        for (let i = 0; i != dirents.length; i++) {
+            if (!dirents[i].isDirectory()) {
+                const name = dirents[i].name;
+                const namedot = name.split(".");
+                const extension = namedot[namedot.length - 1];
+                filenamelist.push(name.slice(0, -(extension.length + 1)));
+                console.log(name.slice(0, -(extension.length + 1)))
+            };
+        };
+        console.log(filenamelist)
+    });
 });
 app.use(cors());
 
@@ -130,14 +144,14 @@ app.post("/*", async (req, res) => {
                         };
                         const ffmpegs = async () => {
                             console.log("\n\n音声のダウンロードが完了しました。\n次にFFmpegでファイルを変換します。");
-                            const prog = ffmpeg()
-                            prog.addInput("cache/" + id + "-y.mp4")
-                            prog.addInput("cache/" + id + "-y.mp3")
-                            prog.videoCodec("copy")
-                            prog.audioCodec("aac")
-                            prog.addOptions(["-map 0:v:0", "-map 1:a:0"])
-                            prog.save("cache/" + id + ".mp4")
-                            prog.on("start", async commandLine => { starttime = Date.now(); console.log("FFmpegでの処理を開始します。" + commandLine); })
+                            const prog = new ffmpeg();
+                            prog.addInput("cache/" + id + "-y.mp4");
+                            prog.addInput("cache/" + id + "-y.mp3");
+                            prog.videoCodec("copy");
+                            prog.audioCodec("aac");
+                            prog.addOptions(["-map 0:v:0", "-map 1:a:0"]);
+                            prog.save("cache/" + id + ".mp4");
+                            prog.on("start", async commandLine => { starttime = Date.now(); console.log("FFmpegでの処理を開始します。" + commandLine); });
                             prog.on("progress", async progress => {
                                 const downloadedSeconds = (Date.now() - starttime) / 1000;
                                 let percent = time(downloadedSeconds / progress.percent - downloadedSeconds);
@@ -145,7 +159,7 @@ app.post("/*", async (req, res) => {
                                 readline.cursorTo(process.stdout, 0);
                                 process.stdout.write(progress.frames + "フレーム処理しました。(" + progress.currentFps + " fps) " + time(downloadedSeconds) + "経過 推定残り時間: " + percent);
                                 readline.moveCursor(process.stdout, 0, 0);
-                            })
+                            });
                             prog.on("end", () => {
                                 fs.unlinkSync("cache/" + id + "-y.mp4");
                                 fs.unlinkSync("cache/" + id + "-y.mp3");
@@ -158,5 +172,5 @@ app.post("/*", async (req, res) => {
             });
             break;
         }
-    }
+    };
 });
