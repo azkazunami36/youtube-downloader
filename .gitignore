@@ -1,3 +1,7 @@
 node_modules/*
 cache/*
 listofVideoIDs.json
+.DS_Store
+*.d.ts
+*.js.map
+*.js
